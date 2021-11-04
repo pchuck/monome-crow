@@ -1,23 +1,26 @@
-# Compiled Lua sources
+# ignore druid output
+druid.log
+
+# ignore compiled
 luac.out
 
-# luarocks build files
+# ignore luarocks build files
 *.src.rock
 *.zip
 *.tar.gz
 
-# Object files
+# ignore objects
 *.o
 *.os
 *.ko
 *.obj
 *.elf
 
-# Precompiled Headers
+# ignore precompiled headers
 *.gch
 *.pch
 
-# Libraries
+# ignore libs
 *.lib
 *.a
 *.la
@@ -25,13 +28,13 @@ luac.out
 *.def
 *.exp
 
-# Shared objects (inc. Windows DLLs)
+# ignore shared objects
 *.dll
 *.so
 *.so.*
 *.dylib
 
-# Executables
+# ignore executables
 *.exe
 *.out
 *.app
