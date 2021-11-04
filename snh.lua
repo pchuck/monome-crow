@@ -8,7 +8,7 @@
 
 -- constants
 V_THRESH = 1.0 -- trigger threshold in volts
-V_HYST = 0.1 -- hysterisis voltage
+V_HYST = 0.1 -- hysteresis voltage
 TRIG = 'rising' -- trigger condition
 CHROMATIC = 12
 V_MAX = 5.0

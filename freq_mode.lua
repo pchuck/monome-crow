@@ -9,7 +9,7 @@
 F_THRESH = 0.01 -- frequency change threshold
 SAMPLE_RATE = 0.1 -- frequency in seconds for sampling input frequency
 V_THRESH = 1.0 -- trigger threshold in volts
-V_HYST = 0.1 -- hysterisis voltage
+V_HYST = 0.1 -- hysteresis voltage
 TRIG = 'rising' -- trigger condition
 CHROMATIC = 12
 
