@@ -43,9 +43,10 @@ end
 
 -- change/trigger call-back
 input[2].change = function(state)
-    -- mirror the frequency on output 1
+    -- convert frequency to voltage, and quantize
     v = hztovolts(last_f)
     vq = quantize(v)
+    -- mirror the frequency on output 1
     output[1].volts = v
     -- quantize the frequency to output 2
     output[2].volts = vq
