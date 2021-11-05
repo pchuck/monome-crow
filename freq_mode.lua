@@ -1,4 +1,6 @@
 --- freq_mode - input oscillation frequency calculator
+--    https://github.com/pchuck/monome-crow
+--
 -- useful as a calibration tool, frequency follower and quantizer
 -- in1: audio-rate line in
 -- in2: clock in
@@ -46,10 +48,8 @@ input[2].change = function(state)
     -- convert frequency to voltage, and quantize
     v = hztovolts(last_f)
     vq = quantize(v)
-    -- mirror the frequency on output 1
-    output[1].volts = v
-    -- quantize the frequency to output 2
-    output[2].volts = vq
+    output[1].volts = v -- mirror the frequency on output 1
+    output[2].volts = vq -- quantize the frequency to output 2
 
     -- debug
     -- print('last_f/v/vq = ', last_f, "/", v, "/", vq)

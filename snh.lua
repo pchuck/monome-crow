@@ -1,4 +1,6 @@
 --- snh - sample and hold + random
+--    https://github.com/pchuck/monome-crow
+--
 -- in1: clock
 -- in2: input voltage
 -- out1: input (sampled/held)
@@ -15,8 +17,7 @@ V_MAX = 5.0
 
 -- initialization
 function init()
-    -- read first input, 'change' mode
-    -- trigger when rising, in 'change' mode. trigger when TRIG
+    -- trigger on first input
     input[1].mode('change', V_THRESH, V_HYST, TRIG)
     print('initialized')
 end
@@ -29,19 +30,13 @@ end
 
 -- trigger call-back
 input[1].change = function(state)
-    -- sample the input voltage
-    v = input[2].volts
+    v = input[2].volts -- sample the input voltage
     vq = quantize(v)
-
-    -- generate a random voltage (0-V_MAX)
-    r = math.random() * V_MAX
+    r = math.random() * V_MAX -- generate a random voltage (0-V_MAX)
     rq = quantize(r)
-
     -- outputs
-    output[1].volts = v
-    output[2].volts = vq
-    output[3].volts = r
-    output[4].volts = rq
+    output[1].volts = v ; output[2].volts = vq
+    output[3].volts = r ; output[4].volts = rq
 
     -- debug
     -- print('v/vq = ', v, "/", vq)
