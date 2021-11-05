@@ -1,17 +1,17 @@
---- krell - behold the flying krow-ell!
+--- krell-dual - behold the flying krow-ell!
 --    https://github.com/pchuck/monome-crow
 --
--- An interpretation of the 'krell' patch for crow
+-- A CV controlled 'melodic' interpretation of the 'krell' patch, for crows.
 --
---   A generative sequencer that outputs two pairs of envelope and v/o
---   on outputs 1/2 and 3/4. Inputs 1/2 independently control the speed of
---   the two pseudo-random sequences.
+--   A pseudo-random generative sequencer that outputs two pairs of envelope
+--   and v/o on outputs 1/2 and 3/4. Inputs 1/2 control the velocity
+--   (via CV) of the two independent sequences.
 --
 --   Input CV voltage ranges, output scale, quantization and envelope
 --   parameters can be customized in the constants section below.
 --
---  in1: cv for 'pace' of the first krell sequence  (see 'CV_RANGE')
---  in2: cv for 'pace' of the second krell sequence (see 'CV_RANGE')
+--  in1: cv over velocity of the first krell sequence  (see 'CV_RANGE')
+--  in2: cv over velocity of the second krell sequence (see 'CV_RANGE')
 -- out1: envelope for first krell sequence
 -- out2: v/o for first krell sequence
 -- out3: envelope for second krell sequence
@@ -37,7 +37,7 @@ local  ATTACK = { 0.01, 1.00 } -- env attack min/max time (s)
 local RELEASE = { 0.05, 4.00 } -- env release min/max time (s)
 
 -- note settings
-local    DELAY = { 0.00, 2.00} -- delay between envelope min/max time (s)
+local    DELAY = { 0.00, 2.00} -- min/max delay between envelopes (s)
 local OV_RANGE = { 0.00, 2.00} -- v/o range (octave range) (v)
 
 -- table indices
@@ -79,7 +79,7 @@ function rand_float(range)
 end
 
 -- generate a random envelope, scaled by pitch, for the specified sequence
-function random_ar(seq_idx, pitch, i_factor)
+function random_ar(seq_idx, pitch)
     local v = input[seq_idx].volts -- current 'pace' cv
     local i_factor = s_factor_i(v,     CV_RANGE) -- higher cv -> shorter env
     local p_factor = s_factor_i(pitch, OV_RANGE) -- higher pitch -> shorter env
@@ -93,7 +93,7 @@ function random_ar(seq_idx, pitch, i_factor)
 end
 
 -- generate a random pause in the form of a 'noop' envelope
-function pause(seq_idx, i_factor)
+function pause(seq_idx)
     local v = input[seq_idx].volts -- current 'pace' cv
     local i_factor = s_factor_i(v, CV_RANGE) -- higher cv -> shorter delay
     local delay = rand_float(DELAY) * i_factor + DELAY[MIN]
