@@ -1,12 +1,20 @@
 --- krell - behold the flying krow-ell!
 --    https://github.com/pchuck/monome-crow
 --
+-- An interpretation of the 'krell' patch for crow
+--   A generative sequencer that outputs two pairs of envelope and v/o
+--   on outputs 1/2 and 3/4. Inputs independetly control the speed of the
+--   two random sequences.
+--
 --  in1: cv for 'pace' of the first krell sequence  (see 'CV_RANGE')
 --  in2: cv for 'pace' of the second krell sequence (see 'CV_RANGE')
 -- out1: envelope for first krell sequence
 -- out2: v/o for first krell sequence
 -- out3: envelope for second krell sequence
 -- out4: v/o for second krell sequence
+--
+-- Input CV voltage ranges, output scale and envelopes can all be customized
+-- in the constants section below.
 --
 
 -- constants
