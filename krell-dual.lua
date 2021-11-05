@@ -64,13 +64,11 @@ local SEQ = { { ['env'] = 1, ['vpo'] = 2 },
 
 -- initialization
 function init()
-    -- note: no callbacks for inputs (read on-demand in krell())
-    -- envelope outputs; hooks for retriggering on EOC
-    output[SEQ[1]['env']].done = retrigger_1
-    output[SEQ[2]['env']].done = retrigger_2
+    -- envelope outputs; hooks for retriggering on EOC and quantization
     for i, v in pairs(SEQS) do
+        output[SEQ[i]['env']].done = function() krell(i) end -- env re-trigger
         output[SEQ[i]['vpo']].scale(SCALE, TET12, VPO) -- pitch outputs
-        krell(i) -- krell sequencer -- initial trigger
+        krell(i) -- krell sequencer -- jump-start w/ initial trigger
     end
 end
 
@@ -120,7 +118,3 @@ function krell(seq_idx)
     output[SEQ[seq_idx]['env']]() -- retrigger the envelope
 end
 
--- retrigger callbacks
--- note: better/possible to pass SEQ as a (single) anon func param in lua?
-function retrigger_1() krell(1) end
-function retrigger_2() krell(2) end
