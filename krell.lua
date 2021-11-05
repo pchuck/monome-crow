@@ -20,10 +20,10 @@ local CV_RANGE = { -5.00, 5.00 } -- min/max input voltage range (v)
 local ENV_SHP = 'lin' -- envelope shape
 local ENV_MAX = 8.00 -- max envelope output voltage
 -- A/R settings
-local  ATTACK = { 0.01, 0.50 } -- env attack min/max time (s)
-local RELEASE = { 0.05, 3.00 } -- env release min/max time (s)
+local  ATTACK = { 0.01, 1.00 } -- env attack min/max time (s)
+local RELEASE = { 0.05, 4.00 } -- env release min/max time (s)
 -- note settings
-local    DELAY = { 0.00, 0.30} -- delay between envelope min/max time (s)
+local    DELAY = { 0.00, 2.00} -- delay between envelope min/max time (s)
 local OV_RANGE = { 0.00, 2.00} -- v/o range (octave range) (v)
 -- table indices
 local MIN = 1; MAX = 2
