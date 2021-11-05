@@ -69,9 +69,9 @@ function rand_float(range)
     return math.random() * (range[MAX] - range[MIN]) + range[MIN]
 end
 
--- generate an envelope function, scaled by pitch, for the specified sequence
+-- generate a random envelope, scaled by pitch, for the specified sequence
 function random_ar(seq_idx, pitch, i_factor)
-    local v = input[seq_idx].volts
+    local v = input[seq_idx].volts -- current 'pace' cv
     local i_factor = s_factor_i(v,     CV_RANGE) -- higher cv -> shorter env
     local p_factor = s_factor_i(pitch, OV_RANGE) -- higher pitch -> shorter env
     local  attack = rand_float(ATTACK)  * p_factor * i_factor + ATTACK[MIN]
@@ -83,10 +83,10 @@ function random_ar(seq_idx, pitch, i_factor)
     return(ar(attack, release, ENV_MAX, ENV_SHAPE))
 end
 
--- generate a pause between envelopes
+-- generate a random pause in the form of a 'noop' envelope
 function pause(seq_idx, i_factor)
-    local v = input[seq_idx].volts
-    local i_factor = s_factor_i(v, CV_RANGE) -- input factor
+    local v = input[seq_idx].volts -- current 'pace' cv
+    local i_factor = s_factor_i(v, CV_RANGE) -- higher cv -> shorter delay
     local delay = rand_float(DELAY) * i_factor + DELAY[MIN]
     return(ar(0.0, delay, 0, 'linear')) -- an envelope with zero magnitude
 end
@@ -95,7 +95,7 @@ end
 function krell(seq_idx)
     local pitch = rand_float(OV_RANGE) -- generate a random voltage
     output[SEQ[seq_idx]['vpo']].volts = pitch -- set the pitch
-    output[SEQ[seq_idx]['env']].action = -- create env and pause
+    output[SEQ[seq_idx]['env']].action = -- create env and variable pause
         { random_ar(seq_idx, pitch), pause(seq_idx) } 
     output[SEQ[seq_idx]['env']]() -- retrigger the envelope
 end
