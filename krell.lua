@@ -10,28 +10,37 @@
 --
 
 -- constants
+
 -- quantization
 local SCALE = {0, 2, 3, 5, 7, 9, 10} -- allowed note values
 local TET12 = 12  -- temperament
 local V_PO  = 1.0 -- volts per octave
+
 -- input control voltage range
 local CV_RANGE = { -5.00, 5.00 } -- min/max input voltage range (v)
+
 -- envelope settings
 local ENV_SHP = 'lin' -- envelope shape
 local ENV_MAX = 8.00 -- max envelope output voltage
+
 -- A/R settings
 local  ATTACK = { 0.01, 1.00 } -- env attack min/max time (s)
 local RELEASE = { 0.05, 4.00 } -- env release min/max time (s)
+
 -- note settings
 local    DELAY = { 0.00, 2.00} -- delay between envelope min/max time (s)
 local OV_RANGE = { 0.00, 2.00} -- v/o range (octave range) (v)
+
 -- table indices
 local MIN = 1; MAX = 2
+
 -- outputs - logical ids of the krell sequencers
 local SEQS = { 1, 2 }
+
 -- sequencer info - envelope and pitch output ids of the krell sequencers
 local SEQ = { { ['env'] = 1, ['vpo'] = 2 },
               { ['env'] = 3, ['vpo'] = 4 } }
+
 
 -- initialization
 function init()
