@@ -1,8 +1,8 @@
 --- krell - behold the flying krow-ell!
 --    https://github.com/pchuck/monome-crow
 --
---  in1: 'pace' of the first krell sequence
---  in2: 'pace' of the second krell sequence
+--  in1: cv for 'pace' of the first krell sequence  (see 'CV_RANGE')
+--  in2: cv for 'pace' of the second krell sequence (see 'CV_RANGE')
 -- out1: envelope for first krell sequence
 -- out2: v/o for first krell sequence
 -- out3: envelope for second krell sequence
@@ -10,29 +10,28 @@
 --
 
 -- constants
-T_STREAM = 1.0 -- stream trigger threshold in seconds
--- quantization settings
-SCALE = {0, 2, 3, 5, 7, 9, 10} -- allowed note values
-TET12 = 12  -- temperament
-V_PO  = 1.0 -- volts per octave
+-- quantization
+local SCALE = {0, 2, 3, 5, 7, 9, 10} -- allowed note values
+local TET12 = 12  -- temperament
+local V_PO  = 1.0 -- volts per octave
 -- input control voltage range
-CV_RANGE = {-5.00, 5.00} -- min/max input voltage range (v)
+local CV_RANGE = { -5.00, 5.00 } -- min/max input voltage range (v)
 -- envelope settings
-ENV_SHP = 'lin' -- envelope shape
-ENV_MAX = 5.00 -- max envelope output voltage
--- AR settings
- ATTACK = {0.01, 0.50} -- env attack min/max time (s)
-RELEASE = {0.05, 3.00} -- env release min/max time (s)
+local ENV_SHP = 'lin' -- envelope shape
+local ENV_MAX = 8.00 -- max envelope output voltage
+-- A/R settings
+local  ATTACK = { 0.01, 0.50 } -- env attack min/max time (s)
+local RELEASE = { 0.05, 3.00 } -- env release min/max time (s)
 -- note settings
-   DELAY = {0.00, 0.30} -- delay between envelope min/max time (s)
-OV_RANGE = {0.00, 2.00} -- v/o range (octave range) (v)
+local    DELAY = { 0.00, 0.30} -- delay between envelope min/max time (s)
+local OV_RANGE = { 0.00, 2.00} -- v/o range (octave range) (v)
 -- table indices
-MIN = 1; MAX = 2
--- outputs - ids of the two krell sequencers
-SEQS = {1, 2}
--- sequencer info - envelope and pitch output ids the two krell sequencers
-SEQ = { { ['env'] = 1, ['vpo'] = 2 },
-        { ['env'] = 3, ['vpo'] = 4 } }
+local MIN = 1; MAX = 2
+-- outputs - logical ids of the krell sequencers
+local SEQS = { 1, 2 }
+-- sequencer info - envelope and pitch output ids of the krell sequencers
+local SEQ = { { ['env'] = 1, ['vpo'] = 2 },
+              { ['env'] = 3, ['vpo'] = 4 } }
 
 -- initialization
 function init()
@@ -48,7 +47,7 @@ end
 
 -- return a factor between 0 and 1.0 representing the position of 'v' in min-max
 function s_factor(v, range)
-    return((v - range[MIN]) / (range[MAX] - range[MIN]))
+    return(      (v - range[MIN]) / (range[MAX] - range[MIN]))
 end
 
 -- return a factor between 0 and 1.0 representing the position of 'v' in max-min
@@ -63,11 +62,11 @@ end
 
 -- generate an envelope function, scaled by pitch, for the specified sequence
 function random_ar(seq_idx, pitch, i_factor)
-    v = input[seq_idx].volts
-    i_factor = s_factor_i(v, CV_RANGE) -- higher voltage is shorter env
-    p_factor = s_factor_i(pitch, OV_RANGE) -- higher pitch is shorter env
-    attack = rand_float(ATTACK) * p_factor * i_factor + ATTACK[MIN]
-    release = rand_float(RELEASE) * p_factor * i_factor + RELEASE[MIN]
+    local v = input[seq_idx].volts
+    local i_factor = s_factor_i(v,     CV_RANGE) -- higher cv -> shorter env
+    local p_factor = s_factor_i(pitch, OV_RANGE) -- higher pitch -> shorter env
+    local  attack = rand_float(ATTACK)  * p_factor * i_factor + ATTACK[MIN]
+    local release = rand_float(RELEASE) * p_factor * i_factor + RELEASE[MIN]
 
     -- debug
     -- print('v - ', v)
@@ -77,18 +76,18 @@ end
 
 -- generate a pause between envelopes
 function pause(seq_idx, i_factor)
-    v = input[seq_idx].volts
-    i_factor = s_factor_i(v, CV_RANGE) -- input factor
-    delay = rand_float(DELAY) * i_factor + DELAY[MIN]
+    local v = input[seq_idx].volts
+    local i_factor = s_factor_i(v, CV_RANGE) -- input factor
+    local delay = rand_float(DELAY) * i_factor + DELAY[MIN]
     return(ar(0.0, delay, 0, 'linear')) -- an envelope with zero magnitude
 end
 
 -- generate a pitch, create and trigger the envelope, for the specified sequence
 function krell(seq_idx)
-    pitch = rand_float(OV_RANGE) -- generate a random voltage
+    local pitch = rand_float(OV_RANGE) -- generate a random voltage
     output[SEQ[seq_idx]['vpo']].volts = pitch -- set the pitch
-    output[SEQ[seq_idx]['env']].action = { -- create env and pause
-        random_ar(seq_idx, pitch), pause(seq_idx) } 
+    output[SEQ[seq_idx]['env']].action = -- create env and pause
+        { random_ar(seq_idx, pitch), pause(seq_idx) } 
     output[SEQ[seq_idx]['env']]() -- retrigger the envelope
 end
 
