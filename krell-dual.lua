@@ -5,7 +5,7 @@
 --
 --   A pseudo-random generative sequencer that outputs two pairs of envelope
 --   and v/o on outputs 1/2 and 3/4. Inputs 1/2 control the velocity
---   (via CV) of the two independent sequences.
+--   (via relative CV level) of the two independent sequences.
 --
 --   Input CV voltage ranges, output scale, quantization and envelope
 --   parameters can be customized in the constants section below.
