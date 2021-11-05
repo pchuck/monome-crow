@@ -1,0 +1,98 @@
+--- krell - behold the flying krow-ell!
+--    https://github.com/pchuck/monome-crow
+--
+--  in1: 'pace' of the first krell sequence
+--  in2: 'pace' of the second krell sequence
+-- out1: envelope for first krell sequence
+-- out2: v/o for first krell sequence
+-- out3: envelope for second krell sequence
+-- out4: v/o for second krell sequence
+--
+
+-- constants
+T_STREAM = 1.0 -- stream trigger threshold in seconds
+-- quantization settings
+SCALE = {0, 2, 3, 5, 7, 9, 10} -- allowed note values
+TET12 = 12  -- temperament
+V_PO  = 1.0 -- volts per octave
+-- input control voltage range
+CV_RANGE = {-5.00, 5.00} -- min/max input voltage range (v)
+-- envelope settings
+ENV_SHP = 'lin' -- envelope shape
+ENV_MAX = 5.00 -- max envelope output voltage
+-- AR settings
+ ATTACK = {0.01, 0.50} -- env attack min/max time (s)
+RELEASE = {0.05, 3.00} -- env release min/max time (s)
+-- note settings
+   DELAY = {0.00, 0.30} -- delay between envelope min/max time (s)
+OV_RANGE = {0.00, 2.00} -- v/o range (octave range) (v)
+-- table indices
+MIN = 1; MAX = 2
+-- outputs - ids of the two krell sequencers
+SEQS = {1, 2}
+-- sequencer info - envelope and pitch output ids the two krell sequencers
+SEQ = { { ['env'] = 1, ['vpo'] = 2 },
+        { ['env'] = 3, ['vpo'] = 4 } }
+
+-- initialization
+function init()
+    -- note: no callbacks for inputs (read on-demand in krell())
+    -- envelope outputs; hooks for retriggering on EOC
+    output[SEQ[1]['env']].done = retrigger_1
+    output[SEQ[2]['env']].done = retrigger_2
+    for i, v in pairs(SEQS) do
+        output[SEQ[i]['vpo']].scale(SCALE, TET12, VPO) -- pitch outputs
+        krell(i) -- krell sequencer -- initial trigger
+    end
+end
+
+-- return a factor between 0 and 1.0 representing the position of 'v' in min-max
+function s_factor(v, range)
+    return((v - range[MIN]) / (range[MAX] - range[MIN]))
+end
+
+-- return a factor between 0 and 1.0 representing the position of 'v' in max-min
+function s_factor_i(v, range)
+    return(1.0 - (v - range[MIN]) / (range[MAX] - range[MIN]))
+end
+
+-- generate a random float between 'min' and 'max'
+function rand_float(range)
+    return math.random() * (range[MAX] - range[MIN]) + range[MIN]
+end
+
+-- generate an envelope function, scaled by pitch, for the specified sequence
+function random_ar(seq_idx, pitch, i_factor)
+    v = input[seq_idx].volts
+    i_factor = s_factor_i(v, CV_RANGE) -- higher voltage is shorter env
+    p_factor = s_factor_i(pitch, OV_RANGE) -- higher pitch is shorter env
+    attack = rand_float(ATTACK) * p_factor * i_factor + ATTACK[MIN]
+    release = rand_float(RELEASE) * p_factor * i_factor + RELEASE[MIN]
+
+    -- debug
+    -- print('v - ', v)
+    -- print(seq_idx, '- p/a/r = ', pitch, '/', attack, '/', release)
+    return(ar(attack, release, ENV_MAX, ENV_SHAPE))
+end
+
+-- generate a pause between envelopes
+function pause(seq_idx, i_factor)
+    v = input[seq_idx].volts
+    i_factor = s_factor_i(v, CV_RANGE) -- input factor
+    delay = rand_float(DELAY) * i_factor + DELAY[MIN]
+    return(ar(0.0, delay, 0, 'linear')) -- an envelope with zero magnitude
+end
+
+-- generate a pitch, create and trigger the envelope, for the specified sequence
+function krell(seq_idx)
+    pitch = rand_float(OV_RANGE) -- generate a random voltage
+    output[SEQ[seq_idx]['vpo']].volts = pitch -- set the pitch
+    output[SEQ[seq_idx]['env']].action = { -- create env and pause
+        random_ar(seq_idx, pitch), pause(seq_idx) } 
+    output[SEQ[seq_idx]['env']]() -- retrigger the envelope
+end
+
+-- retrigger callbacks
+-- note: better/possible to pass SEQ as a (single) anon func param in lua?
+function retrigger_1() krell(1) end
+function retrigger_2() krell(2) end
