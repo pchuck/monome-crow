@@ -18,7 +18,7 @@
 --
 
 -- constants
-M_PERIOD = 0.01 -- metro trigger interval
+M_PERIOD = 0.01 -- metro-based counter interval
 V_THRESH = 1.0 -- trigger threshold in volts
 V_HYST = 0.1 -- hysteresis voltage
 TRIG = 'rising' -- trigger condition
