@@ -71,13 +71,12 @@ SAMPLE_RATE = 1 -- frequency in seconds for sampling clock frequencies
 
 -- initialization
 function init()
-    -- initialize the input modes to accept clock triggers
+    -- initialize the input modes and the trigger callback
     for i, v in pairs(SEQS) do
         input[i].mode('change', V_THRESH, V_HYST, TRIG)
+        input[i].change = function() change(i) end
     end
-    -- initialize the clock callbacks
-    input[SEQS[1]].change = change_1
-    input[SEQS[2]].change = change_2
+
     -- quantize the outputs
     for i, v in pairs(SEQS) do
         output[SEQ[i]['vpo']].scale(SCALE, TET12, VPO) -- pitch outputs
@@ -106,12 +105,12 @@ end
 
 -- update the attack/release parameters and trigger the envelope
 gc_last = { 0, 0 } -- the last time each sequencer's envelope was triggered
-function change(id, state)
+function change(id)
     local gc_delta = (gc_global - gc_last[id]) * M_PERIOD -- hz
     local p = 1 / gc_delta -- clock period, in seconds
     adjust_ard(id, p) -- adjust the envelope based on clock rate
     gc_last[id] = gc_global -- record the current tick
-    trigger(id)
+    krell(id)
 end
 
 -- return a factor between 0 and 1.0 representing the position of 'v' in max-min
@@ -143,7 +142,4 @@ function krell(id)
     output[SEQ[id]['env']]() -- retrigger the envelope
 end
 
--- trigger and change callback wrappers
-function trigger(id) krell(id) end
-function change_1(state) change(SEQS[1], state) end
-function change_2(state) change(SEQS[2], state) end
+
