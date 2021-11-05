@@ -71,17 +71,13 @@ SAMPLE_RATE = 1 -- frequency in seconds for sampling clock frequencies
 
 -- initialization
 function init()
-    -- initialize the input modes and the trigger callback
+    -- initialize mode, call-back and quantization
     for i, v in pairs(SEQS) do
-        input[i].mode('change', V_THRESH, V_HYST, TRIG)
-        input[i].change = function() change(i) end
+        input[i].mode('change', V_THRESH, V_HYST, TRIG) -- trig on clock edge
+        input[i].change = function() change(i) end -- trig call-back function
+        output[SEQ[i]['vpo']].scale(SCALE, TET12, VPO) -- pitch output quant
     end
-
-    -- quantize the outputs
-    for i, v in pairs(SEQS) do
-        output[SEQ[i]['vpo']].scale(SCALE, TET12, VPO) -- pitch outputs
-    end
-    -- setup a predictable timer to track frequency (and set env duration)
+    -- a predictable timer to track frequency (and set env duration)
     counter = metro.init { event = count_event,
                            time = M_PERIOD,
                            count = -1 }
