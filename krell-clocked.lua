@@ -43,7 +43,7 @@ local VPO   = 1.0 -- volts per octave
 local CV_RANGE = { -5.00, 5.00 } -- min/max input voltage range (v)
 
 -- envelope settings
-local ENV_SHP = 'lin' -- envelope shape
+local ENV_SHP = 'rebound' -- envelope shape, eg linear, log, expo, rebound, etc
 local ENV_MAX = 8.00 -- max envelope output voltage
 
 -- A/R settings
@@ -127,7 +127,7 @@ function random_ar(id, pitch)
 
     -- debug
     -- print(id, '- p/a/r = ', pitch, '/', attack, '/', release)
-    return(ar(attack, release, ENV_MAX, ENV_SHAPE))
+    return(ar(attack, release, ENV_MAX, ENV_SHP))
 end
 
 -- generate a pitch, create and trigger the envelope, for the specified sequence
