@@ -43,7 +43,7 @@ local VPO   = 1.0 -- volts per octave
 local CV_RANGE = { -5.00, 5.00 } -- min/max input voltage range (v)
 
 -- envelope settings
-local ENV_SHP = 'rebound' -- envelope shape, eg linear, log, expo, rebound, etc
+local ENV_SHP = 'log' -- envelope shape, eg linear, log, expo, rebound, etc
 local ENV_MAX = 8.00 -- max envelope output voltage
 
 -- A/R settings
