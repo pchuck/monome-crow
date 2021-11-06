@@ -37,7 +37,7 @@ scales = { ['none']   = { },
 -- local SCALE = scales['chroma'] -- for a true 'krell' experience
 local SCALE = scales['dom7th'] -- or, something more melodic
 local TET12 = 12  -- temperament
-local V_PO  = 1.0 -- volts per octave
+local VPO   = 1.0 -- volts per octave
 
 -- input control voltage range
 local CV_RANGE = { -5.00, 5.00 } -- min/max input voltage range (v)
