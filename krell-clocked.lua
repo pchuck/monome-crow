@@ -18,7 +18,7 @@
 --
 
 -- constants
-local M_PERIOD = 0.01 -- metro-based counter interval
+local M_PERIOD = 0.01 -- metro-based counter interval in seconds
 local V_THRESH = 1.0 -- trigger threshold in volts
 local V_HYST = 0.1 -- hysteresis voltage
 local TRIG = 'rising' -- trigger condition
@@ -56,7 +56,7 @@ local RELEASE = { { 0.1, 1.00 }, -- seq 1&2, env release min/max time (s)
 local OV_RANGE = { 0.00, 2.00} -- v/o range (octave range) (v)
 
 -- table indices
-local MIN = 1; MAX = 2
+local MIN = 1; local MAX = 2
 
 -- outputs - logical ids of the krell sequencers
 local SEQS = { 1, 2 }
@@ -64,9 +64,6 @@ local SEQS = { 1, 2 }
 -- sequencer info - envelope and pitch output ids of the krell sequencers
 local SEQ = { { ['env'] = 1, ['vpo'] = 2 },
               { ['env'] = 3, ['vpo'] = 4 } }
-
--- frequency in seconds for sampling clock frequencies
-local SAMPLE_RATE = 1 
 
 
 -- initialization

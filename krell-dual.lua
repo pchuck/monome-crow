@@ -52,7 +52,7 @@ local    DELAY = { 0.00, 2.00} -- min/max delay between envelopes (s)
 local OV_RANGE = { 0.00, 2.00} -- v/o range (octave range) (v)
 
 -- table indices
-local MIN = 1; MAX = 2
+local MIN = 1; local MAX = 2
 
 -- outputs - logical ids of the krell sequencers
 local SEQS = { 1, 2 }
