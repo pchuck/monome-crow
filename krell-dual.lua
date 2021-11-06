@@ -22,15 +22,15 @@
 
 -- quantization
 -- scales (via bowery/quantizer)
-scales = { ['none']   = { },
-           ['octave'] = {0},
-           ['major' ] = {0, 2, 4, 5, 7, 9, 11},
-           ['harMin'] = {0, 2, 3, 5, 7, 8, 10},
-           ['dorian'] = {0, 2, 3, 5, 7, 9, 10},
-           ['majTri'] = {0, 4, 7},
-           ['dom7th'] = {0, 4, 7, 10},
-           ['wholet'] = {0, 2, 4, 6, 8, 10},
-           ['chroma'] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },}
+local scales = { ['none']   = { },
+                 ['octave'] = {0},
+                 ['major' ] = {0, 2, 4, 5, 7, 9, 11},
+                 ['harMin'] = {0, 2, 3, 5, 7, 8, 10},
+                 ['dorian'] = {0, 2, 3, 5, 7, 9, 10},
+                 ['majTri'] = {0, 4, 7},
+                 ['dom7th'] = {0, 4, 7, 10},
+                 ['wholet'] = {0, 2, 4, 6, 8, 10},
+                 ['chroma'] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },}
 -- local SCALE = scales['chroma'] -- for a true 'krell' experience
 local SCALE = scales['dom7th'] -- or, something more melodic
 local TET12 = 12  -- temperament
@@ -65,16 +65,11 @@ local SEQ = { { ['env'] = 1, ['vpo'] = 2 },
 -- initialization
 function init()
     -- envelope outputs; hooks for retriggering on EOC and quantization
-    for i, v in pairs(SEQS) do
-        output[SEQ[i]['env']].done = function() krell(i) end -- env re-trigger
-        output[SEQ[i]['vpo']].scale(SCALE, TET12, VPO) -- pitch outputs
-        krell(i) -- krell sequencer -- jump-start w/ initial trigger
+    for _, v in pairs(SEQS) do
+        output[SEQ[v]['env']].done = function() krell(v) end -- env re-trigger
+        output[SEQ[v]['vpo']].scale(SCALE, TET12, VPO) -- pitch outputs
+        krell(v) -- krell sequencer -- jump-start w/ initial trigger
     end
-end
-
--- return a factor between 0 and 1.0 representing the position of 'v' in min-max
-function s_factor(v, range)
-    return(      (v - range[MIN]) / (range[MAX] - range[MIN]))
 end
 
 -- return a factor between 0 and 1.0 representing the position of 'v' in max-min
@@ -88,8 +83,8 @@ function rand_float(range)
 end
 
 -- generate a random envelope, scaled by pitch, for the specified sequence
-function random_ar(seq_idx, pitch)
-    local v = input[seq_idx].volts -- current 'pace' cv
+function random_ar(sid, pitch)
+    local v = input[sid].volts -- current 'pace' cv
     local i_factor = s_factor_i(v,     CV_RANGE) -- higher cv -> shorter env
     local p_factor = s_factor_i(pitch, OV_RANGE) -- higher pitch -> shorter env
     local  attack = rand_float(ATTACK)  * p_factor * i_factor + ATTACK[MIN]
@@ -97,24 +92,24 @@ function random_ar(seq_idx, pitch)
 
     -- debug
     -- print('v - ', v)
-    -- print(seq_idx, '- p/a/r = ', pitch, '/', attack, '/', release)
+    -- print(sid, '- p/a/r = ', pitch, '/', attack, '/', release)
     return(ar(attack, release, ENV_MAX, ENV_SHP))
 end
 
 -- generate a random pause in the form of a 'noop' envelope
-function pause(seq_idx)
-    local v = input[seq_idx].volts -- current 'pace' cv
+function pause(sid)
+    local v = input[sid].volts -- current 'pace' cv
     local i_factor = s_factor_i(v, CV_RANGE) -- higher cv -> shorter delay
     local delay = rand_float(DELAY) * i_factor + DELAY[MIN]
     return(ar(0.0, delay, 0, 'linear')) -- an envelope with zero magnitude
 end
 
 -- generate a pitch, create and trigger the envelope, for the specified sequence
-function krell(seq_idx)
+function krell(sid)
     local pitch = rand_float(OV_RANGE) -- generate a random voltage
-    output[SEQ[seq_idx]['vpo']].volts = pitch -- set the pitch
-    output[SEQ[seq_idx]['env']].action = -- create env and variable pause
-        { random_ar(seq_idx, pitch), pause(seq_idx) } 
-    output[SEQ[seq_idx]['env']]() -- retrigger the envelope
+    output[SEQ[sid]['vpo']].volts = pitch -- set the pitch
+    output[SEQ[sid]['env']].action = -- create env and variable pause
+        { random_ar(sid, pitch), pause(sid) } 
+    output[SEQ[sid]['env']]() -- retrigger the envelope
 end
 
