@@ -116,7 +116,7 @@ function rand_float(range)
    return math.random() * (range[MAX] - range[MIN]) + range[MIN]
 end
 
--- generate a random envelope, scaled by pitch, for the specified sequence
+-- generate a random envelope, for the specified sequencer, scaled by pitch
 function random_ar(sid, pitch)
    local p_factor = s_factor_i(pitch, OV_RANGE) -- higher pitch -> shorter env
    local  attack = rand_float(ATTACK[sid])  * p_factor + ATTACK[sid][MIN]
@@ -127,7 +127,7 @@ function random_ar(sid, pitch)
    return(ar(attack, release, ENV_MAX, ENV_SHP))
 end
 
--- generate a pitch, create and trigger the envelope, for the specified sequence
+-- generate pitch, create and trigger the envelope, for the specified sequencer
 function krell(sid)
    local pitch = rand_float(OV_RANGE) -- generate a random voltage
    output[SEQ[sid]['vpo']].volts = pitch -- set the pitch

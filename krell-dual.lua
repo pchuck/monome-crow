@@ -82,7 +82,7 @@ function rand_float(range)
     return math.random() * (range[MAX] - range[MIN]) + range[MIN]
 end
 
--- generate a random envelope, scaled by pitch, for the specified sequence
+-- generate a random envelope, for the specified sequencer, scaled by pitch
 function random_ar(sid, pitch)
     local v = input[sid].volts -- current 'pace' cv
     local i_factor = s_factor_i(v,     CV_RANGE) -- higher cv -> shorter env
@@ -96,7 +96,7 @@ function random_ar(sid, pitch)
     return(ar(attack, release, ENV_MAX, ENV_SHP))
 end
 
--- generate a random pause in the form of a 'noop' envelope
+-- random pause in the form of a 'noop' envelope, for the specified sequencer
 function pause(sid)
     local v = input[sid].volts -- current 'pace' cv
     local i_factor = s_factor_i(v, CV_RANGE) -- higher cv -> shorter delay
@@ -104,7 +104,7 @@ function pause(sid)
     return(ar(0.0, delay, 0, 'linear')) -- an envelope with zero magnitude
 end
 
--- generate a pitch, create and trigger the envelope, for the specified sequence
+-- generate pitch, create and trigger the envelope, for the specified sequencer
 function krell(sid)
     local pitch = rand_float(OV_RANGE) -- generate a random voltage
     output[SEQ[sid]['vpo']].volts = pitch -- set the pitch
