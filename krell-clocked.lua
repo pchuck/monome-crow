@@ -18,7 +18,7 @@
 --
 
 -- constants
-local M_PERIOD = 0.01 -- metro-based counter interval in seconds
+local M_PERIOD = 0.001 -- time() interval in seconds
 local V_THRESH = 1.0 -- trigger threshold in volts
 local V_HYST = 0.1 -- hysteresis voltage
 local TRIG = 'rising' -- trigger condition
@@ -74,17 +74,6 @@ function init()
       input[v].change = function() change(v) end -- trig call-back function
       output[SEQ[v]['vpo']].scale(SCALE, TET12, VPO) -- pitch output quant
    end
-   -- a predictable timer to track frequency (and set env duration)
-   local counter = metro.init { event = count_event,
-                                time = M_PERIOD,
-                                count = -1 }
-   counter:start()
-end
-
--- update the timer counter (tracks time in intervals of M_PERIOD)
-local gc_global = 0
-function count_event(count)
-   gc_global = gc_global + 1
 end
 
 -- adjust the envelope based on the provided clock interval period
@@ -97,12 +86,13 @@ function adjust_ard(sid, p)
 end
 
 -- update the attack/release parameters and trigger the envelope
-local gc_last = { 0, 0 } -- last time each sequencer's envelope was triggered
+local time_last = { 0, 0 } -- last time each sequencer's envelope was triggered
 function change(sid)
-   local gc_delta = (gc_global - gc_last[sid]) * M_PERIOD -- hz
-   local p = 1 / gc_delta -- clock period, in seconds
+   local time_now = time()
+   local time_delta = (time_now - time_last[sid]) * M_PERIOD -- hz
+   local p = 1 / time_delta -- clock period, in seconds
    adjust_ard(sid, p) -- adjust the envelope based on clock rate
-   gc_last[sid] = gc_global -- record the current tick
+   time_last[sid] = time_now -- record the current time
    krell(sid)
 end
 
