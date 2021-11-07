@@ -32,9 +32,9 @@ SEQS = { 1, 2 } -- outputs - logical ids of the krell sequencers
 SEQ = { { ['env'] = 1, ['vpo'] = 2 }, { ['env'] = 3, ['vpo'] = 4 } }
 
 -- scales (via bowery/quantizer)
-scale_names = { 'octave', 'major', 'harMin', 'dorian', 'majTri', 'dom7th',
-                'wholet', 'chroma' }
-scale_notes = { ['none']   = { },
+scale_names = { 'none', 'octave', 'major', 'harMin', 'dorian', 'majTri',
+                'dom7th', 'wholet', 'chroma' }
+scale_notes = { ['none']   = 'none',
                 ['octave'] = {0},
                 ['major' ] = {0, 2, 4, 5, 7, 9, 11},
                 ['harMin'] = {0, 2, 3, 5, 7, 8, 10},
@@ -61,8 +61,8 @@ function init()
    for _, v in pairs(SEQS) do
       input[v].mode('change', V_THRESH, V_HYST, TRIG) -- trig on clock edge
       input[v].change = function() change(v) end -- trig call-back function
-      set_scale(public.scale)
    end
+   set_scale(public.scale)
 end
 
 -- set/reset scale at runtime
