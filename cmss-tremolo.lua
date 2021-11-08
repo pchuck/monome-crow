@@ -1,5 +1,5 @@
---- cmss-tremolo - colorado modular society tremolo prototype collaboration
---    pb. sine mountain and patchogram
+--- cmss-tremolo - tremolo prototype/collaboration
+--    pb. the colorado modular society, sine mountain and patchogram
 --    https://github.com/pchuck/monome-crow
 --
 -- A configurable parametric tremolo effect/envelopes generator
