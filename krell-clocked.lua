@@ -24,8 +24,6 @@ V_HYST = 0.1 -- hysteresis voltage
 TRIG = 'rising' -- trigger condition
 TET12 = 12  -- temperament
 VPO = 1.0 -- volts per octave
-ATTACK = { { 0.05, 0.5 }, { 0.05, 0.5 } } -- min/max time (s) for krell seq 1&2
-RELEASE = { { 0.1, 1.00 }, { 0.1, 1.00 } } -- min/max time (s) for krell seq 1&2
 MIN = 1; MAX = 2 -- table indices for ranges
 SEQS = { 1, 2 } -- outputs - logical ids of the krell sequencers
 -- sequencer info - envelope and pitch output ids of the two krell sequencers
@@ -54,6 +52,10 @@ public.add('n_min_v', 0.0, {-5, 0}) -- note minimum output (v/o) voltage level
 public.add('n_max_v', 2.0, { 0, 5}) -- note maximum output (v/o) voltage level
 public.add('e_max_v', 8.0, { 0, 10.0}) -- gain; /envelope max voltage level
 
+-- globals
+attack = { { 0.05, 0.5 }, { 0.05, 0.5 } } -- min/max env (as % of clock) 
+release = { { 0.1, 1.00 }, { 0.1, 1.00 } } -- min/max time (as % of clock)
+
 
 -- initialization
 function init()
@@ -73,12 +75,12 @@ function set_scale(s)
    end
 end
 
--- adjust the envelope based on the provided clock interval period
-function adjust_ard(sid, p)
+-- adjust the envelope based on the provided clock frequency
+function adjust_ard(sid, f)
    -- attack and release min/max times are a fraction of the trigger interval
-    ATTACK[sid][MAX] = 1 / p / 4
-   RELEASE[sid][MAX] = 1 / p / 3
-    ATTACK[sid][MIN] = ATTACK[sid][MAX] / 5
+    attack[sid][MAX] = 1 / f / 4
+   RELEASE[sid][MAX] = 1 / f / 3
+    attack[sid][MIN] = attack[sid][MAX] / 5
    RELEASE[sid][MIN] = RELEASE[sid][MAX] / 3
 end
 
@@ -86,9 +88,9 @@ end
 time_last = { 0, 0 } -- last time each sequencer's envelope was triggered
 function change(sid)
    local time_now = time()
-   local time_delta = (time_now - time_last[sid]) * M_PERIOD -- hz
-   local p = 1 / time_delta -- clock period, in seconds
-   adjust_ard(sid, p) -- adjust the envelope based on clock rate
+   local time_delta = (time_now - time_last[sid]) * M_PERIOD -- seconds
+   local f = 1 / time_delta -- clock frequency, in hertz
+   adjust_ard(sid, f) -- adjust the envelope based on clock rate
    time_last[sid] = time_now -- record the current time
    krell(sid)
 end
@@ -107,7 +109,7 @@ end
 function random_ar(sid, pitch)
    local n_range = {public.n_min_v, public.n_max_v}
    local p_factor = s_factor_i(pitch, n_range) -- higher pitch -> shorter env
-   local  attack = rand_float(ATTACK[sid])  * p_factor + ATTACK[sid][MIN]
+   local  attack = rand_float(attack[sid])  * p_factor + attack[sid][MIN]
    local release = rand_float(RELEASE[sid]) * p_factor + RELEASE[sid][MIN]
 
    -- debug
