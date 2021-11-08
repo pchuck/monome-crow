@@ -41,10 +41,10 @@ end
 
 -- lfo with support for positive/negative offsets, shapes and dynamic values
 function lfo2(sid, pitch, period, offset, level)
-   local shape = public.shape
-   local sub = period / DIV
-   local accel = TIME_ACCEL * (sid * math.random(0.1)) -- stereo shift
-   local ld = LEVEL_DECAY
+   local shape = public.shape -- envelope shape
+   local sub = period / DIV -- time per oscillation, compressed by accel
+   local accel = TIME_ACCEL * (sid * math.random(0.1)) -- accel + stereo shift
+   local ld = LEVEL_DECAY -- amplitude decay per oscillation
    return loop {
       to( offset,                     dyn{time=sub}:mul(accel), shape ), 
       to( dyn{height=level}:step(ld), dyn{time=sub}:mul(accel), shape ) }
