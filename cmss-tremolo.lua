@@ -19,10 +19,10 @@ V_HYST = 0.1 -- hysteresis voltage
 TRIG = 'rising' -- trigger condition
 MIN = 1; MAX = 2 -- table indices for ranges
 OUTS = { 1, 2, 3, 4 } -- outputs - logical ids of the lfo outputs
--- tremolo parameters
+-- tremolo envelope default parameters
 V_MIN = 1.0 -- min output voltage
 V_MAX = 8.0 -- max output voltage
-DIV = 50 -- oscillation rate (number of tremolo divisions per clock period)
+DIV = 50 -- oscillation rate (number of tremolo divisions per tap/clock period)
 TIME_ACCEL = 1.1 -- time compression per tremolo interval
 LEVEL_DECAY = -0.8 -- voltage decay per tremolo interval
 
