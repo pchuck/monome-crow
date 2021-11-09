@@ -49,7 +49,6 @@ function lfo2(sid, pitch, period, offset, level)
    local up = to( offset,                     dyn{time=sub}:mul(accel), shape )
    local dn = to( dyn{height=level}:step(ld), dyn{time=sub}:mul(accel), shape )
    -- invert odd/even output waveforms for a leslie speaker-like stereo effect
-   print('lfo')
    if sid % 2 == 0 then return loop { up, dn } 
    else                 return loop { dn, up } end
    
