@@ -54,10 +54,10 @@ function init()
 end
 
 -- event-handler for clock events
-function change(sid)
+function change()
    for _,i in pairs(SEQS) do
       v = math.random() * public.level + public.offset
-      print('v = ', v)
+      -- print('v = ', v)
       output[i].volts = v
    end
 end
