@@ -1,9 +1,9 @@
---- melodicer - vermona melodicer inspired dual random output for monome crow.
+--- melodicer - vermona melodicer inspired dual output for monome crow.
 --    https://github.com/pchuck/monome-crow
 --
 -- Stochastic randomness with two separate streams of notes and triggers.
 -- See below for controlling v/oct ranges, gate probabilities,
--- sequence lengths and repeats.
+-- sequence lengths and repetition.
 --
 --  in1: voice 1 clock input
 --  in2: voice 2 clock input
@@ -25,10 +25,12 @@
 --   2 and patterns are repeated 8 times before randomizing.
 --   (2) is clocked by in2 and outputs its gate on out3 and notes on out4.
 --
---   After starting the script, execute the following commands to configure:
+--   After starting the script, optionally customize and execute the following:
 --
 --     public.probability_1=0.7
---     public.level_1=3.0
+--     public.level_1=2.0
+--     public.length_1=8
+--     public.repeat_1=4
 --
 --     public.probability_2=1.0
 --     public.level_2=1.0
@@ -82,9 +84,10 @@ public.add('probability_2', 0.6, { 0.0, 1.0 })
 -- output voltage ranges (v)
 public.add('level_1', 2.0, { 0, MAX_V })
 public.add('level_2', 1.0, { 0, MAX_V })
- -- output voltage offsets (v)
-public.add('offset_1', 0.0, { -MAX_V / 2, MAX_V / 2 })
-public.add('offset_2', 0.0, { -MAX_V / 2, MAX_V / 2 })
+-- output voltage offsets (v)
+V_RANGE = { -MAX_V / 2, MAX_V / 2 }
+public.add('offset_1', 0.0, V_RANGE)
+public.add('offset_2', 0.0, V_RANGE)
 -- sequence lengths
 public.add('length_1', 8, { 1, MAX_LEN })
 public.add('length_2', 2, { 1, MAX_LEN })
