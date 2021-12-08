@@ -1,7 +1,8 @@
 # monome-crow
 lua scripts for the monome crow
 
-* rand-quad.lua - four-channels of clocked/held randomness
+* melodicer.lua - two channels of related melodic randomness ('melodicer')
+* rand-quad.lua - four-channels of clocked/held randomness ('mimetic digitalis')
 * cmss-tremolo.lua - pitch/gate controlled tremolo envelopes
 * krell-clocked.lua - behold the flying krow-ells! (clocked version)
 * krell-dual.lua - behold the flying krow-ells!
