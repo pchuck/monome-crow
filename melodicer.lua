@@ -27,15 +27,15 @@
 --
 --   After starting the script, optionally customize (on the druid console)..
 --
---     public.probability_1=0.4
---     public.level_1=2.0
---     public.length_1=8
---     public.repeat_1=4
+--     public.probabilities[1]=0.4
+--     public.levels[1]=2.0
+--     public.lengths[1]=8
+--     public.repeats[1]=4
 --
---     public.probability_2=0.6
---     public.level_2=1.0
---     public.length_2=2
---     public.repeat_2=8
+--     public.probabilities[2]=0.6
+--     public.levels[2]=1.0
+--     public.lengths[2]=2
+--     public.repeats[2]=8
 
 
 -- constants
@@ -118,7 +118,6 @@ end
 function init()
    set_scale(public.scale) -- set quantization
    for _,i in pairs(INS) do
---      update_values()
       randomize(i)
       input[i].mode('change', V_THRESH, V_HYST, TRIG) -- trig on clock edge
       input[i].change = function() change(i) end -- trig call-back function
@@ -128,7 +127,6 @@ end
 -- event-handler for clock events
 function change(sid)
 --   print("sid, r, s", sid, rep_position[sid], seq_position[sid])      
---   update_values()
    seq_position[sid] = seq_position[sid] + 1 --- increment the sequence position
    if seq_position[sid] > public.lengths[sid] then -- sequence exceeds length
       seq_position[sid] = 1 -- wrap 
