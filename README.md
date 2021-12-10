@@ -1,6 +1,7 @@
 # monome-crow
 lua scripts for the monome crow
 
+* adsr.lua - simple variable controlled adsr envelope 
 * melodicer.lua - two channels of related melodic randomness ('melodicer')
 * rand-quad.lua - four-channels of clocked/held randomness ('mimetic digitalis')
 * cmss-tremolo.lua - pitch/gate controlled tremolo envelopes
