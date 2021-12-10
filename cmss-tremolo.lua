@@ -14,14 +14,14 @@
 --
 
 -- constants
-M_PERIOD = 0.001 -- time() interval in seconds
-V_THRESH = 1.0 -- trigger threshold in volts
-V_HYST = 0.1 -- hysteresis voltage
-TRIG = 'rising' -- trigger condition
-GATE = 1 ; PITCH = 2 -- inputs - logical ids of the inputs
-OUTS = { 1, 2, 3, 4 } -- outputs - logical ids of the lfo outputs
-V_MIN = 1.0 -- min output voltage
-V_MAX = 8.0 -- max output voltage
+local M_PERIOD = 0.001 -- time() interval in seconds
+local V_THRESH = 1.0 -- trigger threshold in volts
+local V_HYST = 0.1 -- hysteresis voltage
+local TRIG = 'rising' -- trigger condition
+local GATE = 1 ; PITCH = 2 -- inputs - logical ids of the inputs
+local OUTS = { 1, 2, 3, 4 } -- outputs - logical ids of the lfo outputs
+local V_MIN = 1.0 -- min output voltage
+local V_MAX = 8.0 -- max output voltage
 
 -- public/configurable parameters
 public.add( 'rate',   50, {   1, 100}) -- osc rate (# div per tap/clock period)
@@ -36,8 +36,8 @@ function init()
    input[GATE].change = function() change(1) end -- the call-back function
 end
 
--- lfo with support for positive/negative offsets, shapes and dynamic values
-function lfo2(sid, pitch, period, offset, level)
+-- tremolo lfo w/ support for +/- offsets, shapes and dynamic values
+function tremolo(sid, pitch, period, offset, level)
    local shape = public.shape -- envelope shape
    local sub = period / public.rate -- time per oscillation, compressed by accel
    local accel = public.accel -- time-based modulation accel/deceleration 
@@ -49,20 +49,17 @@ function lfo2(sid, pitch, period, offset, level)
    else                 return loop { dn, up } end
 end
 
--- capture pitch, create and trigger the tremolo envelope for specified out
-function tremolo(sid, period)
-   local pitch = input[PITCH].volts
-   for _, v in pairs(OUTS) do
-      output[v].action = { lfo2(v, pitch, period, V_MIN, V_MAX) }
-      output[v]() -- (re)trigger the envelope
-   end
-end
-
 -- update the tremolo parameters and trigger the envelope
-time_last = { 0, 0 } -- last time each output's envelope was triggered
+local time_last = { 0, 0 } -- last time each output's envelope was triggered
 function change(sid)
    local time_now = time()
    local time_delta = (time_now - time_last[sid]) * M_PERIOD -- seconds (1/f)
    time_last[sid] = time_now -- record the current time
-   tremolo(sid, time_delta)
+   
+   -- capture pitch, create and trigger the tremolo envelope for specified out
+   local pitch = input[PITCH].volts -- unused; could affect tremolo depth
+   for _, v in pairs(OUTS) do
+      output[v].action = { tremolo(v, pitch, time_delta, V_MIN, V_MAX) }
+      output[v]() -- (re)trigger the envelope
+   end
 end
