@@ -20,19 +20,15 @@ V_HYST = 0.1 -- hysteresis voltage
 TRIG = 'rising' -- trigger condition
 GATE = 1 ; PITCH = 2 -- inputs - logical ids of the inputs
 OUTS = { 1, 2, 3, 4 } -- outputs - logical ids of the lfo outputs
--- tremolo envelope default parameters
 V_MIN = 1.0 -- min output voltage
 V_MAX = 8.0 -- max output voltage
-DIV = 50 -- oscillation rate (number of tremolo divisions per tap/clock period)
-TIME_ACCEL = 1.1 -- time compression per tremolo interval
-LEVEL_DECAY = -0.8 -- voltage decay per tremolo interval
 
 -- public/configurable parameters
-public.add('shape', 'sine', -- envelope shape
-           {'linear', 'sine', 'logarithmic', 'exponential',
-            'over', 'under', 'rebound'}) 
-public.add('gain', 8.0, { 0, 10.0}) -- gain/envelope max voltage level
-
+public.add( 'rate',   50, {   1, 100}) -- osc rate (# div per tap/clock period)
+public.add('accel',  1.1, { 1.0, 1.5}) -- time compression per tremolo interval
+public.add('decay', -0.8, {-3.0, 1.0}) -- voltage decay per tremolo interval
+public.add('shape', 'sin', -- envelope shape
+           { 'lin', 'sin', 'log', 'exp', 'over', 'under', 'rebound'})
 
 -- initialization - setup the callbacks for reacting to triggers/gates
 function init()
@@ -43,22 +39,18 @@ end
 -- lfo with support for positive/negative offsets, shapes and dynamic values
 function lfo2(sid, pitch, period, offset, level)
    local shape = public.shape -- envelope shape
-   local sub = period / DIV -- time per oscillation, compressed by accel
-   local accel = TIME_ACCEL -- time-based modulation acceleration/deceleration 
-   local ld = LEVEL_DECAY -- amplitude decay per oscillation
+   local sub = period / public.rate -- time per oscillation, compressed by accel
+   local accel = public.accel -- time-based modulation accel/deceleration 
+   local ld = public.decay -- amplitude decay per oscillation
    local up = to( offset,                     dyn{time=sub}:mul(accel), shape )
    local dn = to( dyn{height=level}:step(ld), dyn{time=sub}:mul(accel), shape )
    -- invert odd/even output waveforms for a leslie speaker-like stereo effect
    if sid % 2 == 0 then return loop { up, dn } 
    else                 return loop { dn, up } end
-   
-   -- pitch currently not used; could affect tremolo rate/depth
-   -- attack/release from tremolo() not used; could layer on an encaps env
-   --   ar(attack, release, public.gain, public.shape)})
 end
 
 -- capture pitch, create and trigger the tremolo envelope for specified out
-function tremolo(sid, period, attack, release)
+function tremolo(sid, period)
    local pitch = input[PITCH].volts
    for _, v in pairs(OUTS) do
       output[v].action = { lfo2(v, pitch, period, V_MIN, V_MAX) }
@@ -66,14 +58,11 @@ function tremolo(sid, period, attack, release)
    end
 end
 
--- update the tremolo/attack/release parameters and trigger the envelope
+-- update the tremolo parameters and trigger the envelope
 time_last = { 0, 0 } -- last time each output's envelope was triggered
 function change(sid)
    local time_now = time()
-   local time_delta = (time_now - time_last[sid]) * M_PERIOD -- seconds
-   local frequency = 1 / time_delta -- tap/clock frequency, in hz
-   local attack = frequency / 5
-   local release = frequency / 3
+   local time_delta = (time_now - time_last[sid]) * M_PERIOD -- seconds (1/f)
    time_last[sid] = time_now -- record the current time
-   tremolo(sid, time_delta, attack, release)
+   tremolo(sid, time_delta)
 end
