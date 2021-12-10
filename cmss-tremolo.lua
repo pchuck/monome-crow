@@ -8,9 +8,9 @@
 --  in1: gate
 --  in2: v/o pitch
 -- out1: tremolo oscillation/decay/envelope 1
--- out2: tremolo oscillation/decay/envelope 2
+-- out2: tremolo oscillation/decay/envelope 2 (phase shifted)
 -- out3: tremolo oscillation/decay/envelope 3
--- out4: tremolo oscillation/decay/envelope 4
+-- out4: tremolo oscillation/decay/envelope 4 (phase shifted)
 --
 
 -- constants
