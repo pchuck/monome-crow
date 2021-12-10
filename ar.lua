@@ -3,7 +3,7 @@
 --
 -- in1: trigger
 -- in2: n/a
--- out1: adsr envelope 
+-- out1: ar envelope 
 -- out2: "
 -- out3: "
 -- out4: "
