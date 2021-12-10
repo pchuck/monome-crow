@@ -31,7 +31,7 @@ public.add('a',        0.01, { 0, MAX_T }) -- attack time (s)
 public.add('r',         0.5, { 0, MAX_T }) -- release time (s)
 public.add('max_level',   7, { 0, MAX_V }) -- max level (v)
 public.add('min_level',   0, { 0, MAX_V }) -- min level (v)
-public.add('shape', 'linear', -- envelope shape
+public.add('shape', 'log', -- envelope shape
            {'linear', 'sine', 'logarithmic', 'exponential',
             'over', 'under', 'rebound'}) 
 
