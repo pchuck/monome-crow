@@ -46,10 +46,8 @@ end
 -- improvement over the asllib ar() envelope function
 --   allows specification of min level
 function ar2(a, r, max_level, min_level, shape)
-   print(a, r, max_level, min_level, shape)
-   return{ to(max_level, a, shape), 
-           to(min_level, r, shape)
-         }
+   -- print(a, r, max_level, min_level, shape)
+   return{ to(max_level, a, shape), to(min_level, r, shape) }
 end
 
 -- trigger call-back
